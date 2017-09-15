@@ -1,6 +1,7 @@
-# Credit to [mrv777](https://github.com/mrv777/LiskScripts) for the hard work on these scripts initially used for Lisk.
-
 # Oxycoin Delegate Scripts
+
+## Credit to [mrv777](https://github.com/mrv777/LiskScripts) for the hard work on these scripts initially used for Lisk.
+# Please consider donating what you can to him
 
 ## Thank you
 Thank you to cc001, corsaro, liberspirita, wannabe_RoteBaron, hagie, isabella, stoner19, punkrock, Nerigal, doweig, and anyone I might have missed for their help and/or contributions.
