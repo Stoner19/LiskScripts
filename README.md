@@ -1,9 +1,11 @@
-# Oxycoin Delegate Scripts  (BETA v0.9.5.1)
+# Credit to [mrv777](https://github.com/mrv777/LiskScripts) for the hard work on these scripts initially used for Lisk.
+
+# Oxycoin Delegate Scripts
 
 ## Thank you
 Thank you to cc001, corsaro, liberspirita, wannabe_RoteBaron, hagie, isabella, stoner19, punkrock, Nerigal, doweig, and anyone I might have missed for their help and/or contributions.
 
-*Disclaimer: This is always a work in progress.  I provide no warrenty or guerentee :)*
+*Disclaimer: This is always a work in progress.  I provide no warranty or guarantee :)*
 
 ## Config settings
 * port                --http port for oxycoin API access                       (needed by check_consensus.sh){needed by manage.sh}

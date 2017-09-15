@@ -89,7 +89,7 @@ function SyncState()
 find_newest_snap_rebuild(){
 
 	SNAPSHOTS=(
-	  $HOME/oxy-snapshot/snapshot/
+	  $HOME/oxy-snapshot/snapshot/ ## this is assuming that you are running oxy-snapshot (https://github.com/Oxycoin/oxy-snapshot)
 	  ## https://
 	  ## https://
 	  ## https://
