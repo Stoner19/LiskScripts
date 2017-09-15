@@ -21,17 +21,17 @@
 ## sudo apt-get install jq
 ## you have to whitelist on config.json (on the API and FORGING section), the IP of the machine where the script is running
 ## Inside the script you have to write your SECRET seed
-## on this version, I use https on port 2443
+## on this version, I use https on port 10001
 ##
 #!/bin/bash
 SECRET="\"PASSPHRASE\""
 SRV1="SERVER1"  # ip or host if set in /etc/hosts
 SRV2="SERVER2" # ip or host if set in /etc/hosts
 SRV3="SERVER3" # ip or host if set in /etc/hosts
-PRT1=":8000"   # 7000 on testnet, 8000 on mainnet
+PRT1=":10000"   # 9998 on testnet, 10000 on mainnet
 PRT2=$PRT1     # same port used on both server
 PRT3=$PRT1     # same port used on both server
-PRTS=":2443"   # port used on https
+PRTS=":10001"   # port used on https
 pbk="PUBLIC KEY"
 while true; do
     HEIGHT1=$(curl --connect-timeout 2 -s "http://"$SRV1""$PRT1"/api/loader/status/sync"| jq '.height')
@@ -49,7 +49,7 @@ while true; do
     then
         HEIGHT3=$(curl --connect-timeout 2 -s "http://"$SRV3""$PRT3"/api/loader/status/sync"| jq '.height')
     fi
-    
+
     ## Check if any servers are off
     if ! [[ "$HEIGHT1" =~ ^[0-9]+$ ]];
     then
@@ -66,7 +66,7 @@ while true; do
         echo $SRV3 " " "is off?"
         HEIGHT3="0"
     fi
-    
+
     ## Get forging status of servers
     FORGE1=$(curl --connect-timeout 2 -s "http://"$SRV1""$PRT1"/api/delegates/forging/status?publicKey="$pbk| jq '.enabled')
     if [[ -z "$FORGE1" ]];
@@ -83,7 +83,7 @@ while true; do
     then
         FORGE3=$(curl --connect-timeout 2 -s "http://"$SRV3""$PRT3"/api/delegates/forging/status?publicKey="$pbk| jq '.enabled')
     fi
-    
+
     ## If none reported forging, wait 1 second and double check
     if [ "$FORGE1" != "true"  ] && [ "$FORGE2" != "true" ] && [ "$FORGE3" != "true" ];
     then
@@ -105,13 +105,13 @@ while true; do
 			FORGE3=$(curl --connect-timeout 2 -s "http://"$SRV3""$PRT3"/api/delegates/forging/status?publicKey="$pbk| jq '.enabled')
 		fi
     fi
-    
+
     ## Display status of servers
     date +"%Y-%m-%d %H:%M:%S"
     echo $SRV1 " " $HEIGHT1 " " $FORGE1
     echo $SRV2 " " $HEIGHT2 " " $FORGE2
     echo $SRV3 " " $HEIGHT3 " " $FORGE3
-    
+
     ## Find highest height
     HEIGHT=$HEIGHT1
     if [ "$HEIGHT2" -gt "$HEIGHT" ];
@@ -122,10 +122,10 @@ while true; do
     then
     	HEIGHT=$HEIGHT3
     fi
-    
+
     echo
     echo "Highest Height: $HEIGHT"
-    
+
     ## Make sure a server is forging.
     if [ "$FORGE1" != "true"  ] && [ "$FORGE2" != "true" ] && [ "$FORGE3" != "true" ];
     then
@@ -141,7 +141,7 @@ while true; do
 			curl --connect-timeout 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":'"$SECRET"'}' https://"$SRV1""$PRTS"/api/delegates/forging/enable
 		fi
     fi
-    
+
     ## Check height of forging server
     if [[ "$FORGE1" == "true" ]];
     then
@@ -178,7 +178,7 @@ while true; do
 				curl --connect-timeout 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":'"$SECRET"'}' https://"$SRV2""$PRTS"/api/delegates/forging/disable
 				curl --connect-timeout 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":'"$SECRET"'}' https://"$SRV3""$PRTS"/api/delegates/forging/disable
 				curl --connect-timeout 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":'"$SECRET"'}' https://"$SRV1""$PRTS"/api/delegates/forging/enable
-			else		
+			else
 				echo
 				echo "$SRV2 height too low. Switching to $SRV3"
 				curl --connect-timeout 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":'"$SECRET"'}' https://"$SRV1""$PRTS"/api/delegates/forging/disable
@@ -209,7 +209,7 @@ while true; do
 			fi
 		fi
     fi
-    
+
     ## Make sure only one node is forging.  If not, enable it on first node within highest height and disable on others
     if ( [ "$FORGE1" == "true" ] && [ "$FORGE2" == "true" ] ) || ( [ "$FORGE1" == "true" ] && [ "$FORGE3" == "true" ] ) || ( [ "$FORGE2" == "true" ] && [ "$FORGE3" == "true" ] );
     then
@@ -236,7 +236,7 @@ while true; do
 			echo "Switching to $SRV3"
 		fi
     fi
-    
+
     ## Sleep for 7 seconds
     sleep 7
 done
