@@ -1,6 +1,6 @@
 {
 	"port":":10000",
-	"https_port":":10000",
+	"https_port":":10001",
 	"oxycoin_directory":"~/oxy-node",
 	"pbk":"YOUR PUBLIC KEY",
 	"secret":"YOUR SECRET",
