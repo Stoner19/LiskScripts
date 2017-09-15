@@ -49,11 +49,11 @@ function SyncState()
 		result=`curl -s "http://$SRV/api/loader/status/sync"| jq '.syncing'`
 		sleep 2
 		## Check that oxycoin is running still and didn't crash when trying to resync
-		STATUS="$(bash oxy_manager.bash status | grep 'Oxycoin is running as PID')"
+		STATUS="$(bash oxy_manager.bash status | grep '√ OXY is running.')"
 		if [[ -z "$STATUS" ]];
 		then
 			sleep 90 ## Wait 90 seconds to make sure Oxycoin isn't just down for a rebuild
-			STATUS="$(bash oxy_manager.bash status | grep 'Oxycoin is running as PID')"
+			STATUS="$(bash oxy_manager.bash status | grep '√ OXY is running.')"
 			if [[ -z "$STATUS" ]];
 			then
 				date +"%Y-%m-%d %H:%M:%S || ${red}WARNING: Oxycoin does not seem to be running.  Trying a stop and start.${resetColor}"
@@ -224,11 +224,11 @@ local_height() {
 ChangeDirectory  ## Enter oxycoin directory
 while true; do
 	## Check that oxycoin is running first!!
-	STATUS="$(bash oxy_manager.bash status | grep 'Oxycoin is running as PID')"
+	STATUS="$(bash oxy_manager.bash status | grep '√ OXY is running.')"
 	if [[ -z "$STATUS" ]];
 	then
 		sleep 90 ## Wait 90 seconds to make sure Oxycoin isn't just down for a rebuild
-		STATUS="$(bash oxy_manager.bash status | grep 'Oxycoin is running as PID')"
+		STATUS="$(bash oxy_manager.bash status | grep '√ OXY is running.')"
 		if [[ -z "$STATUS" ]];
 		then
 			date +"%Y-%m-%d %H:%M:%S || ${red}WARNING: Oxycoin does not seem to be running.  Trying a stop and start.${resetColor}"
