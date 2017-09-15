@@ -1,4 +1,4 @@
-# Lisk Delegate Scripts  (BETA v0.9.5.1)
+# Oxycoin Delegate Scripts  (BETA v0.9.5.1)
 
 ## Thank you
 Thank you to cc001, corsaro, liberspirita, wannabe_RoteBaron, hagie, isabella, stoner19, punkrock, Nerigal, doweig, and anyone I might have missed for their help and/or contributions.
@@ -6,9 +6,9 @@ Thank you to cc001, corsaro, liberspirita, wannabe_RoteBaron, hagie, isabella, s
 *Disclaimer: This is always a work in progress.  I provide no warrenty or guerentee :)*
 
 ## Config settings
-* port                --http port for lisk API access                       (needed by check_consensus.sh){needed by manage.sh}
-* https_port          --https port for lisk API access                      (needed by check_consensus.sh){needed by manage.sh}
-* lisk_directory      --directory where lisk is installed                   (needed by check_consensus.sh)[needed by check_height_and_rebuild.sh]
+* port                --http port for oxycoin API access                       (needed by check_consensus.sh){needed by manage.sh}
+* https_port          --https port for oxycoin API access                      (needed by check_consensus.sh){needed by manage.sh}
+* oxycoin_directory      --directory where oxycoin is installed                   (needed by check_consensus.sh)[needed by check_height_and_rebuild.sh]
 * pbk                 --Your account's public key                           (needed by check_consensus.sh){needed by manage.sh}
 * secret              --Your account's secret passphrase                    (needed by check_consensus.sh){needed by manage.sh}
 * manage_servers      --Array of servers for management script to use       {needed by manage.sh}
@@ -30,7 +30,7 @@ This is the wrapper script for check_height_and_rebuild.sh and check_consensus.s
 #### How to run:
 
 1. `sudo apt-get install jq`
-2. `wget https://raw.githubusercontent.com/mrv777/LiskScripts/master/control.sh`
+2. `wget https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/control.sh`
 3. Choose which scripts to run
   1. `bash control.sh start` - Both
   2. `bash control.sh startc` - Consensus script only
@@ -47,17 +47,17 @@ To check the logs and what the script is going:
 ### check_consensus.sh
 **User does not need to directly do anything with this.  control.sh interfaces with it automatically**
 
-This script looks at the last two lines of the log: ~/lisk-main/logs/lisk.log for the word 'Inadequate'.  If it sees that word then it tries to switch forging quickly to server 2.  If server two is not at a good height, it tries server 3 if available.  You can run this on all forging servers.
+This script looks at the last two lines of the log: ~/oxy-node/logs/oxycoin.log for the word 'Inadequate'.  If it sees that word then it tries to switch forging quickly to server 2.  If server two is not at a good height, it tries server 3 if available.  You can run this on all forging servers.
 
 #### How to test:
-If you enter `"Inadequate" >> ~/lisk-main/log/lisk.log` on the server, it should activate check_consensus.sh to switch forging nodes
+If you enter `"Inadequate" >> ~/oxy-node/log/oxycoin.log` on the server, it should activate check_consensus.sh to switch forging nodes
 
 ## My Anti-fork script
 
 ### check_height_and_rebuild.sh
 **User does not need to directly do anything with this.  control.sh interfaces with it automatically**
 
-Compares the height of your 100 connected peers and gets the highest height.  Then checks your node is within 4 blocks of it.  If not, it tries a reload first.  If the reload doesn't get it back within an acceptable range, it tries a rebuild.  The rebuild attempts to get the newest snap available from servers listed. 
+Compares the height of your 100 connected peers and gets the highest height.  Then checks your node is within 4 blocks of it.  If not, it tries a reload first.  If the reload doesn't get it back within an acceptable range, it tries a rebuild.  The rebuild attempts to get the newest snap available from servers listed.
 
 ## My Management script
 
@@ -68,7 +68,7 @@ This script will check the block heights of all listed servers.  It will attempt
 #### How to run:
 
 1. `sudo apt-get install jq`
-2. `wget https://raw.githubusercontent.com/mrv777/LiskScripts/master/control.sh`
+2. `wget https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/control.sh`
 3. `bash control.sh startm` - Start management script
 
 To check the logs and what the script is going:

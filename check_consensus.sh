@@ -2,22 +2,22 @@
 #!/bin/bash
 
 ## Check for config file
-CONFIG_FILE="mrv_config.json"
+CONFIG_FILE="config.json"
 
 ##  Read config file
 CONFIGFILE=$(cat "$CONFIG_FILE")
 SECRET=$( echo "$CONFIGFILE" | jq -r '.secret')
-LDIRECTORY=$( echo "$CONFIGFILE" | jq -r '.lisk_directory')
+LDIRECTORY=$( echo "$CONFIGFILE" | jq -r '.oxycoin_directory')
 SRV1=$( echo "$CONFIGFILE" | jq -r '.srv1')
 PRT=$( echo "$CONFIGFILE" | jq -r '.port')
 PRTS=$( echo "$CONFIGFILE" | jq -r '.https_port')
 PBK=$( echo "$CONFIGFILE" | jq -r '.pbk')
 SERVERS=()
 ### Get servers array
-size=$( echo "$CONFIGFILE" | jq '.servers | length') 
+size=$( echo "$CONFIGFILE" | jq '.servers | length')
 i=0
 
-while [ $i -le "$size" ]    
+while [ $i -le "$size" ]
 do
 	SERVERS[$i]=$(echo "$CONFIGFILE" | jq -r --argjson i $i '.servers[$i]')
 	i=$((i + 1))
@@ -41,14 +41,14 @@ RESETCOLOR=$(tput sgr0)
 date +"%Y-%m-%d %H:%M:%S || ${GREEN}Starting MrV's consensus script${RESETCOLOR}"
 
 
-# Set Lisk directory
+# Set Oxycoin directory
 function ChangeDirectory(){
 	cd ~
 	eval "cd $LDIRECTORY"
 }
 
 #---------------------------------------------------------------------------
-# Looping while node is syncing blockchain 
+# Looping while node is syncing blockchain
 # from Nerigal
 function SyncState()
 {
@@ -81,8 +81,8 @@ do
 		HEIGHTLOCAL=$( echo "$SERVERLOCAL" | jq '.height')
 		CONSENSUSLOCAL=$( echo "$SERVERLOCAL" | jq '.consensus')
 		## Get recent log
-		LOG=$(tail ~/lisk-main/logs/lisk.log -n 10)
-		
+		LOG=$(tail ~/oxy-node/logs/oxycoin.log -n 10)
+
 		## Look for a forged block in logs
 		FORGEDBLOCKLOG=$( echo "$LOG" | grep 'Forged new block')
 		## Display in log if a new block forged and we didn't just display this one
@@ -116,7 +116,7 @@ do
 						DIFF="999"
 					fi
 					## if [ "$DIFF" -lt "3" ] && [ "$CONSENSUS" -gt "$CONSENSUSLOCAL" ]; ## Removed for now as I believe consensus read from API isn't updated every second to be fully accurate
-					if [ "$DIFF" -lt "3" ]; 
+					if [ "$DIFF" -lt "3" ];
 					then
 						DISABLEFORGE=$(curl -s -S --connect-timeout 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"$SRV1""$PRTS"/api/delegates/forging/disable | jq '.success')
 						if [ "$DISABLEFORGE" = "true" ];
@@ -144,7 +144,7 @@ do
 			else
 				date +"%Y-%m-%d %H:%M:%S || ${RED}WARNING: Inadequate consensus to forge.${RESETCOLOR}"
 			fi
-			
+
 			## Disable forging on local server first.  If successful, loop through servers until we are able to enable forging on one
 			DISABLEFORGE=$(curl -s -S --connect-timeout 1 --retry 3 --retry-delay 0 --retry-max-time 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"$SRV1""$PRTS"/api/delegates/forging/disable | jq '.success')
 			if [ "$DISABLEFORGE" = "true" ];
@@ -164,7 +164,7 @@ do
 				date +"%Y-%m-%d %H:%M:%S || ${RED}Failed to disable forging on $SRV1.${RESETCOLOR}"
 			fi
 		fi
-		
+
 		## If consensus is less than 51 or there was a fork in the log and we are forging soon (but not one of the next 2), try a reload to get new peers
 		## Management script should switch forging server during reload
 		## from Nerigal
@@ -176,7 +176,7 @@ do
 			else
 				date +"%Y-%m-%d %H:%M:%S || ${YELLOW}Low consensus of $CONSENSUSLOCAL.  Looking for delegate forging soon matching $PBK${RESETCOLOR}"
 			fi
-		
+
 			DELEGATESNEXT=$(curl -s -S --connect-timeout 1 --retry 3 --retry-delay 0 --retry-max-time 3 "http://"$SRV1""$PRT"/api/delegates/getNextForgers?limit=2" | jq '.delegates')
 			if [[ $DELEGATESNEXT != *"$PBK"* ]];
 			then
@@ -199,7 +199,7 @@ do
 							DIFF="999"
 						fi
 						## if [ "$DIFF" -lt "3" ] && [ "$CONSENSUS" -gt "$CONSENSUSLOCAL" ]; ## Removed for now as I believe consensus read from API isn't updated every second to be fully accurate
-						if [ "$DIFF" -lt "3" ]; 
+						if [ "$DIFF" -lt "3" ];
 						then
 							DISABLEFORGE=$(curl -s -S --connect-timeout 1 --retry 3 --retry-delay 0 --retry-max-time 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"$SRV1""$PRTS"/api/delegates/forging/disable | jq '.success')
 							if [ "$DISABLEFORGE" = "true" ];
@@ -207,7 +207,7 @@ do
 								curl -s -S --connect-timeout 2 --retry 2 --retry-delay 0 --retry-max-time 4 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"$SERVER""$PRTS"/api/delegates/forging/enable
 								date +"%Y-%m-%d %H:%M:%S || ${CYAN}Successsfully switching to Server $SERVER with a consensus of $CONSENSUS as your consensus is too low.  We will try a reload.${RESETCOLOR}"
 								ChangeDirectory
-								bash lisk.sh reload
+								bash oxy_manager.bash reload
 								sleep 15
 								SyncState
 								break
@@ -221,7 +221,7 @@ do
 				date +"%Y-%m-%d %H:%M:%S || ${RED}You are forging within next 20 seconds, too soon to try a reload.${RESETCOLOR}"
 			fi
 		fi
-		
+
 		(( ++TXTDELAY ))
 		if [[ "$TXTDELAY" -gt "60" ]];  ## Wait 30 seconds to update running status to not overcrowd log
 		then

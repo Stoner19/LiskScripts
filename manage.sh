@@ -2,7 +2,7 @@
 #!/bin/bash
 
 ## Check for config file
-CONFIG_FILE="mrv_config.json"
+CONFIG_FILE="config.json"
 
 ##  Read config file
 CONFIGFILE=$(cat "$CONFIG_FILE")
@@ -12,10 +12,10 @@ PRTS=$( echo "$CONFIGFILE" | jq -r '.https_port')
 PBK=$( echo "$CONFIGFILE" | jq -r '.pbk')
 SERVERS=()
 ### Get servers array
-SIZE=$( echo "$CONFIGFILE" | jq '.manage_servers | length') 
+SIZE=$( echo "$CONFIGFILE" | jq '.manage_servers | length')
 i=0
 
-while [ $i -le $((SIZE-1)) ]    
+while [ $i -le $((SIZE-1)) ]
 do
 	SERVERS[$i]=$(echo "$CONFIGFILE" | jq -r --argjson i $i '.manage_servers[$i]')
     i=$(( i + 1 ))
@@ -42,7 +42,7 @@ while true; do
 	SERVERSCONSENSUS=()
 	NUM=0
 	HIGHHEIGHT=0
-	
+
 	## Get info on all servers
 	for SERVER in "${SERVERS[@]}"
 	do
@@ -54,7 +54,7 @@ while true; do
 		fi
 		HEIGHT=$( echo "$SERVERINFO" | jq '.height')
 		CONSENSUS=$( echo "$SERVERINFO" | jq '.consensus')
-		
+
 		## Check if server is off
 		if ! [[ "$HEIGHT" =~ ^[0-9]+$ ]];
 		then
@@ -74,21 +74,21 @@ while true; do
 				FORGING=$NUM
 			fi
 		fi
-		
+
 		## Find highest height
 		if [ "$HEIGHT" -gt "$HIGHHEIGHT" ];
 		then
 			HIGHHEIGHT=$HEIGHT
 		fi
-		
+
 		SERVERSINFO[$NUM]=$HEIGHT
 		SERVERSFORGING[$NUM]=$FORGE
 		SERVERSCONSENSUS[$NUM]=$CONSENSUS
 		date +"%Y-%m-%d %H:%M:%S || $SERVER - Height:$HEIGHT - Consensus:$CONSENSUS - Forging:$FORGE"
-		
+
 		((NUM++))
 	done
-	
+
 	NUM=0
 	## Check if any servers are forging
 	if ! [[ ${SERVERSFORGING[*]} =~ "true" ]];
@@ -96,7 +96,7 @@ while true; do
 		for SERVER in "${SERVERS[@]}"
 		do
 			DIFF=$(( HIGHHEIGHT - ${SERVERSINFO[$NUM]} ))
-			if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[$NUM]}" -gt "50" ]; 
+			if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[$NUM]}" -gt "50" ];
 			then
 				date +"%Y-%m-%d %H:%M:%S || ${YELLOW}No node forging.  Starting on $SERVER${RESETCOLOR}"
 				ENABLEFORGE=$(curl -s -S --connect-timeout 2 --retry 2 --retry-delay 0 --retry-max-time 2 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"$SERVER""$PRTS"/api/delegates/forging/enable | jq '.success')
@@ -120,14 +120,14 @@ while true; do
 		done
 		continue  ## Start back at top of loop, now that one server is forging
 	fi
-	
+
 	## Check that only one server is forging
 	FORGINGCOUNT=0
 	for FSTATUS in ${SERVERSFORGING[*]}; do
 		if [[ $FSTATUS =~ true ]]; then
 			(( FORGINGCOUNT++ ))
 		fi
-	done 
+	done
 	if [ "$FORGINGCOUNT" -gt "1" ]
 		then
 			date +"%Y-%m-%d %H:%M:%S || ${RED}Multiple servers forging!${RESETCOLOR}"
@@ -140,7 +140,7 @@ while true; do
 			for index in "${!SERVERS[@]}"
 			do
 				DIFF=$(( HIGHHEIGHT - ${SERVERSINFO[$index]} ))
-				if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[$NUM]}" -gt "50" ]; 
+				if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[$NUM]}" -gt "50" ];
 				then
 					ENABLEFORGE=$(curl -s -S --connect-timeout 1 --retry 2 --retry-delay 0 --retry-max-time 2 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"${SERVERS[$index]}""$PRTS"/api/delegates/forging/enable | jq '.success')
 					if [ "$ENABLEFORGE" = "true" ];
@@ -161,13 +161,13 @@ while true; do
 		sleep 9
 	else  ## Same server still forging, check that everything still looks good on it
 		date +"%Y-%m-%d %H:%M:%S || Highest Height: $HIGHHEIGHT"
-		
+
 		##Check that it is the main server forging
 		if [ "$FORGING" != "0" ];
 		then
 			date +"%Y-%m-%d %H:%M:%S || ${YELLOW}Main server not forging${RESETCOLOR}"
 			DIFF=$(( HIGHHEIGHT - ${SERVERSINFO[0]} ))
-			if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[0]}" -gt "50" ]; 
+			if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[0]}" -gt "50" ];
 			then
 				DISABLEFORGE=$(curl -s -S --connect-timeout 2 --retry 3 --retry-delay 0 --retry-max-time 3 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"${SERVERS[$FORGING]}""$PRTS"/api/delegates/forging/disable | jq '.success')
 				if [ "$DISABLEFORGE" = "true" ];
@@ -191,7 +191,7 @@ while true; do
 				fi
 			fi
 		fi
-	
+
 		DIFF=$(( HIGHHEIGHT - ${SERVERSINFO[$FORGING]} ))
 		if [ "$DIFF" -gt "3" ]
 		then
@@ -205,7 +205,7 @@ while true; do
 			for index in "${!SERVERS[@]}"
 			do
 				DIFF=$(( HIGHHEIGHT - ${SERVERSINFO[$index]} ))
-				if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[$NUM]}" -gt "50" ]; 
+				if [ "$DIFF" -lt "4" ] && [ "${SERVERSCONSENSUS[$NUM]}" -gt "50" ];
 				then
 					ENABLEFORGE=$(curl -s -S --connect-timeout 1 --retry 2 --retry-delay 0 --retry-max-time 2 -k -H "Content-Type: application/json" -X POST -d '{"secret":"'"$SECRET"'"}' https://"${SERVERS[$index]}""$PRTS"/api/delegates/forging/enable | jq '.success')
 					if [ "$ENABLEFORGE" = "true" ];
@@ -220,8 +220,8 @@ while true; do
 			done
 		fi
 	fi
-	
-	
+
+
 	## Record which server was forging before sleep
 	PREVIOUSFORGING=$FORGING
 	## Sleep for 6 seconds

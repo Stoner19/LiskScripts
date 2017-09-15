@@ -1,7 +1,7 @@
 {
-	"port":":8000",
-	"https_port":":2443",
-	"lisk_directory":"~/lisk-main",
+	"port":":10000",
+	"https_port":":10000",
+	"oxycoin_directory":"~/oxy-node",
 	"pbk":"YOUR PUBLIC KEY",
 	"secret":"YOUR SECRET",
 	"manage_servers": [

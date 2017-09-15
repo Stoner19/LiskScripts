@@ -12,20 +12,20 @@ MANAGE_LOG_FILE="manage.log"
 
 start_height() {
 	## Check for config file
-	CONFIG_FILE="mrv_config.json"
+	CONFIG_FILE="config.json"
 	if [[ ! -e "$CONFIG_FILE" ]] ; then
-		wget "https://raw.githubusercontent.com/mrv777/LiskScripts/master/mrv_config.json"
+		wget "https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/config.json"
 		PS3='Please select an editor to input config details: '
 		options=("nano" "vi")
 		select opt in "${options[@]}"
 		do
 		    case $opt in
 			"nano")
-			    nano mrv_config.json
+			    nano config.json
 			    break
 			    ;;
 			"vi")
-			    vi mrv_config.json
+			    vi config.json
 			    break
 			    ;;
 			*) echo invalid option;;
@@ -36,9 +36,9 @@ start_height() {
 		touch "$LOG_FILE"
 	fi
 	if [[ ! -e "$SH_FILE" ]] ; then
-		wget "https://raw.githubusercontent.com/mrv777/LiskScripts/master/check_height_and_rebuild.sh"
+		wget "https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/check_height_and_rebuild.sh"
 	fi
-	
+
 	echo "Starting heightRebuild Script"
 	nohup bash $SH_FILE -S $SRV  > $LOG_FILE 2>&1&  ## SRV???
 }
@@ -59,28 +59,28 @@ upgrade_height() {
 	then
 		rm "$SH_FILE"
 	fi
-	
-	wget "https://raw.githubusercontent.com/mrv777/LiskScripts/master/check_height_and_rebuild.sh"
+
+	wget "https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/check_height_and_rebuild.sh"
 	echo "Starting heightRebuild Script"
 	nohup bash $SH_FILE -S $SRV  > $LOG_FILE 2>&1&
 }
 
 start_consensus() {
 	## Check for config file
-	CONFIG_FILE="mrv_config.json"
+	CONFIG_FILE="config.json"
 	if [[ ! -e "$CONFIG_FILE" ]] ; then
-		wget "https://raw.githubusercontent.com/mrv777/LiskScripts/master/mrv_config.json"
+		wget "https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/config.json"
 		PS3='Please select an editor to input config details: '
 		options=("nano" "vi")
 		select opt in "${options[@]}"
 		do
 		    case $opt in
 			"nano")
-			    nano mrv_config.json
+			    nano config.json
 			    break
 			    ;;
 			"vi")
-			    vi mrv_config.json
+			    vi config.json
 			    break
 			    ;;
 			*) echo invalid option;;
@@ -91,9 +91,9 @@ start_consensus() {
 		touch "$CONSENSUS_LOG_FILE"
 	fi
 	if [[ ! -e "$CONSENSUS_SH_FILE" ]] ; then
-		wget "https://raw.githubusercontent.com/mrv777/LiskScripts/master/check_consensus.sh"
+		wget "https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/check_consensus.sh"
 	fi
-	
+
 	echo "Starting consensus Script"
 	nohup bash $CONSENSUS_SH_FILE -S $SRV  > $CONSENSUS_LOG_FILE 2>&1&
 }
@@ -114,8 +114,8 @@ upgrade_consensus() {
 	then
 		rm "$CONSENSUS_SH_FILE"
 	fi
-	
-	wget "https://raw.githubusercontent.com/mrv777/LiskScripts/master/check_consensus.sh"
+
+	wget "https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/check_consensus.sh"
 	echo "Starting consensus Script"
 	nohup bash $CONSENSUS_SH_FILE -S $SRV  > $CONSENSUS_SH_FILE 2>&1&
 }
@@ -125,9 +125,9 @@ start_manage() {
 		touch "$MANAGE_LOG_FILE"
 	fi
 	if [[ ! -e "$MANAGE_SH_FILE" ]] ; then
-		wget "https://raw.githubusercontent.com/mrv777/LiskScripts/master/manage.sh"
+		wget "https://raw.githubusercontent.com/Stoner19/OxyCoinScripts/master/manage.sh"
 	fi
-	
+
 	echo "Starting Management Script"
 	nohup bash $MANAGE_SH_FILE -S $SRV  > $MANAGE_LOG_FILE 2>&1&
 }
@@ -151,7 +151,7 @@ status() {
 	else
 		echo "Consensus is not currently running"
 	fi
-	
+
 	# Check if heightRebuild is running
 	if pgrep -fl $SH_FILE > /dev/null
 	then
@@ -159,7 +159,7 @@ status() {
 	else
 		echo "HeightRebuild is not currently running"
 	fi
-	
+
 	# Check if manage.sh is running
 	if pgrep -fl $MANAGE_SH_FILE > /dev/null
 	then
@@ -198,7 +198,7 @@ usage() {
   echo "upgrade       		-- upgrades and runs both scripts"
 }
 
-case $1 in 
+case $1 in
 "start" )
 	check_height_running
 	start_height
@@ -217,30 +217,30 @@ case $1 in
 	check_manage_running
 	start_manage
 ;;
-"stop" ) 
+"stop" )
 	check_height_running
 	check_consensus_running
 	check_manage_running
 ;;
-"stopc" ) 
+"stopc" )
 	check_consensus_running
 ;;
-"stoph" ) 
+"stoph" )
 	check_height_running
 ;;
-"stopm" ) 
+"stopm" )
 	check_manage_running
 ;;
-"status" ) 
+"status" )
 	status
 ;;
-"logs" ) 
+"logs" )
 	logs
 ;;
-"upgrade" ) 
+"upgrade" )
 	check_height_running
 	check_consensus_running
-	
+
 	upgrade_height
 	upgrade_consensus
 ;;

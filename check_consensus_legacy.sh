@@ -2,7 +2,7 @@
 #!/bin/bash
 
 ## Check for config file
-CONFIG_FILE="mrv_config.json"
+CONFIG_FILE="config.json"
 
 ##  Read config file
 CONFIGFILE=$(cat "$CONFIG_FILE")
@@ -12,10 +12,10 @@ PRT=$( echo "$CONFIGFILE" | jq -r '.port')
 PRTS=$( echo "$CONFIGFILE" | jq -r '.https_port')
 SERVERS=()
 ### Get servers array
-size=$( echo "$CONFIGFILE" | jq '.servers | length') 
+size=$( echo "$CONFIGFILE" | jq '.servers | length')
 i=0
 
-while [ $i -le "$size" ]    
+while [ $i -le "$size" ]
 do
 	SERVERS[$i]=$(echo "$CONFIGFILE" | jq -r --argjson i $i '.servers[$i]')
 	i=$((i + 1))
@@ -35,7 +35,7 @@ date +"%Y-%m-%d %H:%M:%S || ${GREEN}Starting MrV's legacy consensus script${RESE
 
 while true; do
 	## Get recent log
- 	INADEQUATE=$(tail ~/lisk-main/logs/lisk.log -n 2| grep 'Inadequate')
+ 	INADEQUATE=$(tail ~/oxy-node/logs/oxycoin.log -n 2| grep 'Inadequate')
 	if [ -n "$INADEQUATE" ];
 	then
 		date +"%Y-%m-%d %H:%M:%S || ${RED}WARNING: Inadequate consensus to forge.${RESETCOLOR}"
